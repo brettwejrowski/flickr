@@ -691,6 +691,7 @@ class Flickr
         @api_key = api_key
         @client = Flickr.new @api_key
       end
+      self.getInfo
     end
 
     # Implements flickr.photosets.getInfo
