@@ -355,7 +355,7 @@ class Flickr
 
     # Implements flickr.photosets.getList
     def photosets
-      @client.photosets_getList('user_id'=>@id)['photosets']['photoset'].collect { |photoset| Photoset.new(photoset['id'], @api_key) }
+      @client.photosets_getList('user_id'=>@id)['photosets']['photoset'].collect { |photoset| Photoset.new('id' => photoset['id'], 'client' => @client, 'owner' => self ) }
     end
 
     # Implements flickr.tags.getListUser
@@ -682,18 +682,26 @@ class Flickr
   class Photoset
 
     attr_reader :id, :client, :owner, :primary, :photos, :title, :description, :url
+     def initialize(id_or_params_hash=nil, username=nil, email=nil, password=nil, api_key=nil)
+        if id_or_params_hash.is_a?(Hash)
+          id_or_params_hash.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
+        else
 
-    def initialize(id=nil, api_key=nil)
-      @id = id
-      @api_key = api_key
-      @client = Flickr.new @api_key
+    def initialize(id_or_params_hash=nil, api_key=nil)
+      if id_or_params_hash.is_a?(Hash)
+        id_or_params_hash.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
+      else
+        @id = id
+        @api_key = api_key
+        @client = Flickr.new @api_key
+      end
     end
 
     # Implements flickr.photosets.getInfo
     # private, once we can call it as needed
     def getInfo
-      info = @client.photosets_getInfo( { 'photoset_id'=>@id, 'api_key'=>@api_key } )['photoset']
-      @owner = User.new(info['owner'], nil, nil, nil, @api_key)
+      info = @client.photosets_getInfo('photoset_id'=>@id)['photoset']
+      @owner ||= User.new(info['owner'], nil, nil, nil, @api_key)
       @primary = info['primary']
       @photos = info['photos']
       @title = info['title']
