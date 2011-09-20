@@ -682,10 +682,6 @@ class Flickr
   class Photoset
 
     attr_reader :id, :client, :owner, :primary, :photos, :title, :description, :url
-     def initialize(id_or_params_hash=nil, username=nil, email=nil, password=nil, api_key=nil)
-        if id_or_params_hash.is_a?(Hash)
-          id_or_params_hash.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
-        else
 
     def initialize(id_or_params_hash=nil, api_key=nil)
       if id_or_params_hash.is_a?(Hash)
