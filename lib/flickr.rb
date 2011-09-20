@@ -691,7 +691,6 @@ class Flickr
         @api_key = api_key
         @client = Flickr.new @api_key
       end
-      self.getInfo
     end
 
     # Implements flickr.photosets.getInfo
@@ -703,7 +702,7 @@ class Flickr
       @photos = info['photos']
       @title = info['title']
       @description = info['description']
-      @url = "http://www.flickr.com/photos/#{@owner.getInfo.username}/sets/#{@id}/"
+      @url = "http://www.flickr.com/photos/#{@owner.username}/sets/#{@id}/"
       self
     end
 
