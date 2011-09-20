@@ -692,7 +692,7 @@ class Flickr
     # Implements flickr.photosets.getInfo
     # private, once we can call it as needed
     def getInfo
-      info = @client.photosets_getInfo('photoset_id'=>@id, 'api_key'=>@api_key)['photoset']
+      info = @client.photosets_getInfo( { 'photoset_id'=>@id, 'api_key'=>@api_key } )['photoset']
       @owner = User.new(info['owner'], nil, nil, nil, @api_key)
       @primary = info['primary']
       @photos = info['photos']
