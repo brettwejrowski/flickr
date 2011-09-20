@@ -697,7 +697,7 @@ class Flickr
     # private, once we can call it as needed
     def getInfo
       info = @client.photosets_getInfo('photoset_id'=>@id)['photoset']
-      @owner ||= User.new(info['owner'], nil, nil, nil, @api_key)
+      @owner = User.new(info['owner'], nil, nil, nil, @api_key) if @owner.nil?
       @primary = info['primary']
       @photos = info['photos']
       @title = info['title']
