@@ -159,6 +159,10 @@ class Flickr
   def photoset(photoset_id)
     Photoset.new(photoset_id, @api_key)
   end
+  
+  def photoset_for_user( params )
+    Photoset.new( params )
+  end
 
   # Implements flickr.tags.getRelated
   def related_tags(tag)
