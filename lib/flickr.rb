@@ -203,7 +203,7 @@ class Flickr
   # acts like request but returns a PhotoCollection (a list of Photo objects)
   def photos_request(method, params={})
     photos = request(method, params)
-    PhotoCollection.new(photos, @api_key)
+    PhotoCollection.new(photos, self)
   end
 
   # Builds url for Flickr API REST request from given the flickr method name
@@ -235,12 +235,12 @@ class Flickr
     # the first (and only) key-value pair of the response. The key will vary
     # depending on the original object the photos are related to (e.g 'photos',
     # 'photoset', etc)
-    def initialize(photos_api_response={}, api_key=nil)
+    def initialize(photos_api_response={}, client=nil)
       photos = photos_api_response.values.first
       [ "page", "pages", "perpage", "total" ].each { |i| instance_variable_set("@#{i}", photos[i])}
       collection = photos['photo'] || []
       collection = [collection] if collection.is_a? Hash
-      collection.each { |photo| self << Photo.new(photo.delete('id'), api_key, photo) }
+      collection.each { |photo| self << Photo.new(photo.delete('id'), client, photo) }
     end
   end
 
@@ -401,11 +401,15 @@ class Flickr
 
     attr_reader :id, :client, :title
 
-    def initialize(id=nil, api_key=nil, extra_params={})
-      @id = id
+    def initialize(id_or_params_hash=nil, api_key=nil)
+      if id_or_params_hash.is_a?(Hash)
+        id_or_params_hash.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
+        
+    def initialize(id_or_params_hash=nil, client=nil, extra_params={})
+      @id = id_or_params_hash
       @api_key = api_key
       extra_params.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
-      @client = Flickr.new @api_key
+      @client = client
     end
 
     # Allows access to all photos instance variables through hash like
@@ -706,7 +710,7 @@ class Flickr
       @photos = info['photos']
       @title = info['title']
       @description = info['description']
-      @url = "http://www.flickr.com/photos/#{@owner.username}/sets/#{@id}/"
+      @url = "http://www.flickr.com/photos/#{@owner.id}/sets/#{@id}/"
       self
     end
 
