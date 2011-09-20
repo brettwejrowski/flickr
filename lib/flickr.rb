@@ -403,7 +403,6 @@ class Flickr
         
     def initialize(id_or_params_hash=nil, client=nil, extra_params={})
       @id = id_or_params_hash
-      @api_key = api_key
       extra_params.each { |k,v| self.instance_variable_set("@#{k}", v) } # convert extra_params into instance variables
       @client = client
     end
@@ -601,7 +600,7 @@ class Flickr
         info = @client.photos_getInfo('photo_id'=>@id)['photo']
         @got_info = true
         info.each { |k,v| instance_variable_set("@#{k}", v)}
-        @owner = User.new(info['owner']['nsid'], info['owner']['username'], nil, nil, @api_key)
+        @owner = User.new(info['owner']['nsid'], info['owner']['username'], nil, nil, @client.api_key)
         @tags = info['tags']['tag']
         @notes = info['notes']['note']#.collect { |note| Note.new(note.id) }
         @url = info['urls']['url']['content'] # assumes only one url
